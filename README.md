@@ -1,87 +1,94 @@
-# ⚡ blitz ⚡ ⚡
+# ⚡ blitz ⚡
 
 [![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-brightgreen.svg)](https://github.com/)
 
-An advanced, high-performance reconnaissance tool rewritten from Bash to Python. This tool leverages **concurrency** to perform subdomain discovery, alive probing, port scanning, and screenshotting at blazing speeds.
+**blitz** is a high-performance, multi-threaded reconnaissance engine designed for speed and reliability. Built to replace traditional, slow bash scripts, it orchestrates a powerful toolchain to deliver comprehensive recon results in seconds.
 
 ---
 
 ## 🚀 Interactive Quick Start
 
-> **Wait!** Before you run, ensure you have the required tools installed.
-
 ```bash
-# Clone the repository (if you haven't already)
-git clone <your-repo-url>
+# Clone the repository
+git clone https://github.com/YOUR_USERNAME/blitz.git
 cd blitz
 
-# Run your first recon scan
+# Run a full recon scan with a visual dependency check
 python3 blitz.py example.com -s
+
+# Skip the dependency check for maximum speed
+python3 blitz.py example.com -k
 ```
 
 ---
 
 ## 🛠️ Features & Toolchain
 
-This tool orchestrates the best-in-class security tools for a comprehensive recon pipeline:
+**blitz** uses a highly concurrent architecture to run independent tasks in parallel:
 
-| Phase | Tool(s) Used | Why it's faster? |
+| Phase | Tool(s) Used | Speed Advantage |
 | :--- | :--- | :--- |
-| **Subdomains** | `Assetfinder`, `Subfinder` | Parallel execution + 100 threads |
-| **Probing** | `Httprobe`, `Httpx` | Native HTTP concurrency |
-| **Takeovers** | `Subjack` | 200 parallel fingerprints checks |
-| **Scanning** | `Nmap` | Aggressive `-T5` & `--min-rate` |
-| **Wayback** | `Waybackurls` | Multi-threaded extension sorting |
-| **Visuals** | `Gowitness`, `Eyewitness` | Concurrent browser rendering |
+| **Subdomains** | `Assetfinder`, `Subfinder` | Parallel discovery + 100 threads |
+| **Probing** | `Httprobe`, `Httpx` | High-speed alive verification |
+| **Takeovers** | `Subjack` | 200 parallel fingerprint checks |
+| **Scanning** | `Nmap` | Aggressive `-T5` & `--min-rate 1000` |
+| **Wayback** | `Waybackurls` | Concurrent URL scraping & filtering |
+| **Screenshots** | `Gowitness`, `Eyewitness` | Multi-threaded browser rendering |
 
 ---
 
-## 📖 Detailed Instructions
+## 📖 Usage Guide
 
 ### 📥 Prerequisites
-Ensure the following tools are in your `$PATH`:
+**blitz** will automatically verify these for you, but for best results, ensure they are in your `$PATH`:
 - [x] Assetfinder / Subfinder
 - [x] Httprobe / Httpx
 - [x] Subjack
-- [x] Nmap
-- [x] Waybackurls
-- [x] Gowitness or EyeWitness (optional for screenshots)
+- [x] Nmap / Waybackurls
+- [x] Gowitness or EyeWitness (optional)
 
 ### 🎮 Command Options
 
 ```text
 Options:
-  -h, --help            Show this beautiful menu
+  -h, --help            Show this beautiful help menu
+  -k, --skip-check      ⏩ Skip the tool dependency check to save time
   -s, --screenshot      📸 Enable automated screenshotting
   -t TOOL, --tool=TOOL  🛠️  Screenshot tool (gowitness/eyewitness)
-  -v, --verbose         🔍 Debug mode for deep inspection
+  -v, --verbose         🔍 Enable verbose output for debugging
 ```
 
-### 📂 Directory Structure Created
+---
+
+## 🛡️ Smart Dependency Management
+No more guessing if your environment is ready. **blitz** features an intelligent verification system:
+
+- **Visual Status Table:** Prints a clear report of all required and optional tools before launching.
+- **Fail-Safe Abort:** Prevents wasted time by alerting you if a critical tool is missing.
+- **Silent Optimization:** Even when skipping the check (`-k`), **blitz** silently detects high-speed optional tools like `httpx` to ensure you always get the best performance.
+
+---
+
+## 📂 Output Structure
+Every scan creates a structured `recon/` directory:
 ```bash
-example.com/
+domain.com/
 └── recon/
-    ├── final.txt              # All unique subdomains
+    ├── final.txt              # Unified unique subdomains
     ├── httprobe/
-    │   └── alive.txt          # Active web targets
-    ├── scans/                 # Nmap output (XML/Grep/Normal)
-    ├── wayback/               # URL data & filtered extensions
-    └── screenshots/           # Visual proof of findings
+    │   ├── alive.txt          # Verified active domains
+    │   └── httpx_detailed.txt # Full HTTP response data
+    ├── scans/                 # Nmap scan results (all formats)
+    ├── wayback/               # URL data & extension-sorted lists
+    └── screenshots/           # Visual snapshots of all alive targets
 ```
 
 ---
 
-## 🛡️ Exception Handling & Speed
-- **Fail-Safe:** Pre-checks all dependencies and alerts you if a tool is missing.
-- **Robust:** Gracefully handles keyboard interrupts (`Ctrl+C`) and network timeouts.
-- **Aggressive:** Optimized for high-bandwidth environments to get results in seconds, not minutes.
-
----
-
-## 🤝 Contribution
-Found a bug or have a feature request? Open an issue or submit a pull request!
+## 🤝 Contribution & Feedback
+We love contributors! If you have a speed optimization or a new tool integration, feel free to open a PR.
 
 ---
 *Created with ❤️ for the security community.*
