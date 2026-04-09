@@ -119,10 +119,10 @@ class blitz:
         cmds = []
         if "httpx" in self.available_extras:
             # httpx is significantly faster, use it as primary with 100 threads
-            cmds.append(f"httpx -l {final_txt} -t 100 -silent | sed 's/https\\?:\/\/\\?//' >> {temp_alive}")
+            cmds.append(rf"httpx -l {final_txt} -t 100 -silent | sed 's/https\?:\/\/\\?//' >> {temp_alive}")
             cmds.append(f"httpx -l {final_txt} -t 100 -silent -sc -td -title > {os.path.join(self.recon_dir, 'httprobe/httpx_detailed.txt')}")
         else:
-            cmds.append(f"cat {final_txt} | httprobe -s -p https:443 | sed 's/https\\?:\/\/\\?//' | tr -d ':443' >> {temp_alive}")
+            cmds.append(rf"cat {final_txt} | httprobe -s -p https:443 | sed 's/https\?:\/\/\\?//' | tr -d ':443' >> {temp_alive}")
 
         with ThreadPoolExecutor(max_workers=len(cmds)) as executor:
             executor.map(lambda cmd: self.run_command(cmd), cmds)
