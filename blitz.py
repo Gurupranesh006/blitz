@@ -8,24 +8,33 @@ from concurrent.futures import ThreadPoolExecutor
 
 # ANSI Color codes for better output
 class Colors:
+    CYAN = '\033[96m'
+    MAGENTA = '\033[95m'
     BLUE = '\033[94m'
     GREEN = '\033[92m'
     YELLOW = '\033[93m'
     RED = '\033[91m'
     ENDC = '\033[0m'
     BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
 
 def print_status(msg):
-    print(f"{Colors.BLUE}[+]{Colors.ENDC} {msg}")
+    print(f"{Colors.CYAN}[+]{Colors.ENDC} {msg}")
 
 def print_success(msg):
-    print(f"{Colors.GREEN}[*]{Colors.ENDC} {msg}")
+    print(f"{Colors.GREEN}[*]{Colors.ENDC} {Colors.BOLD}{msg}{Colors.ENDC}")
 
 def print_error(msg):
     print(f"{Colors.RED}[-]{Colors.ENDC} {msg}")
 
 def print_warning(msg):
     print(f"{Colors.YELLOW}[!]{Colors.ENDC} {msg}")
+
+def print_info(msg):
+    print(f"{Colors.BLUE}[i]{Colors.ENDC} {msg}")
+
+def print_task(msg):
+    print(f"{Colors.MAGENTA}[>]{Colors.ENDC} {Colors.UNDERLINE}{msg}{Colors.ENDC}")
 
 class blitz:
     def __init__(self, domain, screenshot=False, screenshot_tool="gowitness"):
@@ -43,7 +52,7 @@ class blitz:
             self.required_tools.append(screenshot_tool)
 
     def check_dependencies(self):
-        print_status("Checking dependencies...")
+        print_info("Verifying all required tool dependencies...")
         missing_required = []
         for tool in self.required_tools:
             if subprocess.call(["which", tool], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) != 0:
@@ -61,6 +70,7 @@ class blitz:
         print_success("Dependencies verified.")
 
     def setup_dirs(self):
+        print_info("Setting up output directory structure...")
         dirs = [
             self.recon_dir,
             os.path.join(self.recon_dir, "scans"),
@@ -161,7 +171,7 @@ class blitz:
         cmd = f"cat {final_txt} | waybackurls | sort -u"
         self.run_command(cmd, wayback_output)
 
-        print_status("Compiling params and extensions (Parallel)...")
+        print_info("Compiling params and extensions (Parallel)...")
         params_file = os.path.join(self.recon_dir, "wayback/params/wayback_params.txt")
         self.run_command(f"grep '?*=' {wayback_output} | cut -d '=' -f 1 | sort -u", params_file)
 
@@ -197,7 +207,7 @@ class blitz:
         self.probe_alive()
         
         # These can run in parallel
-        print_status("Starting parallel tasks (Takeovers, Ports, Wayback)...")
+        print_task("Starting parallelized recon engine (Takeovers, Ports, Wayback)...")
         with ThreadPoolExecutor(max_workers=3) as executor:
             executor.submit(self.check_takeovers)
             executor.submit(self.scan_ports)
@@ -207,7 +217,7 @@ class blitz:
             self.take_screenshots()
             
         end_time = time.time()
-        print_success(f"Recon completed in {round(end_time - start_time, 2)} seconds.")
+        print_success(f"⚡ blitz recon completed in {round(end_time - start_time, 2)} seconds. ⚡")
 
 def main():
     usage = "usage: %prog [options] domain"
