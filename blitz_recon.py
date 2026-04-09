@@ -27,7 +27,7 @@ def print_error(msg):
 def print_warning(msg):
     print(f"{Colors.YELLOW}[!]{Colors.ENDC} {msg}")
 
-class ReconTool:
+class BlitzRecon:
     def __init__(self, domain, screenshot=False, screenshot_tool="gowitness"):
         self.domain = domain
         self.screenshot = screenshot
@@ -212,7 +212,7 @@ class ReconTool:
 def main():
     usage = "usage: %prog [options] domain"
     description = """
-High-Speed Python Recon Tool (Multi-threaded)
+BlitzRecon: High-Speed Multi-threaded Recon Tool
 --------------------------------------------
 This tool automates subdomain discovery, alive probing, port scanning,
 wayback data scraping, and optional screenshotting. It is designed to
@@ -247,7 +247,7 @@ Examples:
         sys.exit(1)
     
     domain = args[0]
-    recon = ReconTool(domain, screenshot=options.screenshot, screenshot_tool=options.tool)
+    recon = BlitzRecon(domain, screenshot=options.screenshot, screenshot_tool=options.tool)
     
     try:
         recon.run()
