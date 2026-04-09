@@ -1,4 +1,4 @@
-# ⚡ BlitzRecon ⚡ ⚡
+# ⚡ blitz ⚡ ⚡
 
 [![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -15,10 +15,10 @@ An advanced, high-performance reconnaissance tool rewritten from Bash to Python.
 ```bash
 # Clone the repository (if you haven't already)
 git clone <your-repo-url>
-cd blitz-recon
+cd blitz
 
 # Run your first recon scan
-python3 blitz_recon.py example.com -s
+python3 blitz.py example.com -s
 ```
 
 ---
