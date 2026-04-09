@@ -37,10 +37,11 @@ def print_task(msg):
     print(f"{Colors.MAGENTA}[>]{Colors.ENDC} {Colors.UNDERLINE}{msg}{Colors.ENDC}")
 
 class blitz:
-    def __init__(self, domain, screenshot=False, screenshot_tool="gowitness"):
+    def __init__(self, domain, screenshot=False, screenshot_tool="gowitness", skip_check=False):
         self.domain = domain
         self.screenshot = screenshot
         self.screenshot_tool = screenshot_tool
+        self.skip_check = skip_check
         self.base_dir = domain
         self.recon_dir = os.path.join(self.base_dir, "recon")
         self.threads = 50  # Increased default concurrency
@@ -52,22 +53,42 @@ class blitz:
             self.required_tools.append(screenshot_tool)
 
     def check_dependencies(self):
-        print_info("Verifying all required tool dependencies...")
+        print_info("🔍 Verifying tool dependencies and environment...")
+        
+        all_tools = {
+            "Required": self.required_tools,
+            "Optional": self.extra_tools
+        }
+        
         missing_required = []
-        for tool in self.required_tools:
-            if subprocess.call(["which", tool], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) != 0:
-                missing_required.append(tool)
+        self.available_extras = []
+        
+        print(f"\n{Colors.BOLD}{'TOOL':<15} {'STATUS':<15} {'TYPE':<10}{Colors.ENDC}")
+        print("-" * 40)
+        
+        for category, tools in all_tools.items():
+            for tool in tools:
+                is_installed = subprocess.call(["which", tool], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) == 0
+                
+                if is_installed:
+                    status = f"{Colors.GREEN}Installed{Colors.ENDC}"
+                    if category == "Optional":
+                        self.available_extras.append(tool)
+                else:
+                    status = f"{Colors.RED}Not Found{Colors.ENDC}"
+                    if category == "Required":
+                        missing_required.append(tool)
+                
+                print(f"{tool:<15} {status:<24} {category:<10}")
+        
+        print("-" * 40 + "\n")
         
         if missing_required:
-            print_error(f"Missing REQUIRED tools: {', '.join(missing_required)}")
+            print_error(f"Critical error: The following required tools are missing: {', '.join(missing_required)}")
+            print_info("Please install them to proceed. (Tip: Most are available via 'go install' or your package manager)")
             sys.exit(1)
             
-        self.available_extras = []
-        for tool in self.extra_tools:
-            if subprocess.call(["which", tool], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) == 0:
-                self.available_extras.append(tool)
-        
-        print_success("Dependencies verified.")
+        print_success("All core dependencies found. Ready to launch Blitz engine!")
 
     def setup_dirs(self):
         print_info("Setting up output directory structure...")
@@ -197,7 +218,11 @@ class blitz:
         self.run_command(cmd)
 
     def run(self):
-        self.check_dependencies()
+        if not self.skip_check:
+            self.check_dependencies()
+        else:
+            print_info("⏩ Skipping dependency check as requested.")
+            
         self.setup_dirs()
         
         start_time = time.time()
@@ -241,6 +266,9 @@ multi-threading and high-performance tools like httpx and subfinder.
     parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False,
                       help="Enable verbose output for debugging.")
 
+    parser.add_option("-k", "--skip-check", action="store_true", dest="skip_check", default=False,
+                      help="Skip the tool dependency check to save time.")
+
     # Add examples to the help menu
     parser.epilog = """
 Examples:
@@ -257,7 +285,7 @@ Examples:
         sys.exit(1)
     
     domain = args[0]
-    recon = blitz(domain, screenshot=options.screenshot, screenshot_tool=options.tool)
+    recon = blitz(domain, screenshot=options.screenshot, screenshot_tool=options.tool, skip_check=options.skip_check)
     
     try:
         recon.run()
