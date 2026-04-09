@@ -49,6 +49,7 @@ class blitz:
         self.required_tools = ["assetfinder", "httprobe", "subjack", "nmap", "waybackurls"]
         # Optional high-speed tools for "more added features"
         self.extra_tools = ["subfinder", "httpx"]
+        self.available_extras = []
         if screenshot:
             self.required_tools.append(screenshot_tool)
 
@@ -221,7 +222,11 @@ class blitz:
         if not self.skip_check:
             self.check_dependencies()
         else:
-            print_info("⏩ Skipping dependency check as requested.")
+            print_info("⏩ Skipping main dependency check as requested.")
+            # Silently check for extra tools to ensure maximum speed
+            for tool in self.extra_tools:
+                if subprocess.call(["which", tool], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) == 0:
+                    self.available_extras.append(tool)
             
         self.setup_dirs()
         
